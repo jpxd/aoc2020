@@ -1,13 +1,14 @@
-use std::{fs::File, time::Instant};
 use std::io::{self, BufRead};
+use std::{fs::File, time::Instant};
 
-fn parse(filename: &str)-> Option<Vec<i32>>{
+fn parse(filename: &str) -> Option<Vec<i32>> {
     let file = File::open(filename).ok()?;
     let lines = io::BufReader::new(file).lines();
-    let numbers: Vec<i32> = lines.into_iter().map(|l| {
-        l.unwrap().parse().unwrap()
-    }).collect();
-    return Some(numbers)
+    let numbers: Vec<i32> = lines
+        .into_iter()
+        .map(|l| l.unwrap().parse().unwrap())
+        .collect();
+    return Some(numbers);
 }
 
 fn main() {
@@ -22,12 +23,12 @@ fn main() {
     let mut result2 = 0;
     for (i, a) in numbers.iter().enumerate() {
         for (j, b) in numbers[i..].iter().enumerate() {
-            if a+b == 2020 {
-                result1 = a*b;
+            if a + b == 2020 {
+                result1 = a * b;
             }
-            for c in numbers[i+j..].iter() {
-                if a+b+c == 2020 {
-                    result2 = a*b*c
+            for c in numbers[i + j..].iter() {
+                if a + b + c == 2020 {
+                    result2 = a * b * c
                 }
             }
         }

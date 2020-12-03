@@ -1,9 +1,14 @@
-use std::{fs::File, io::{self, BufRead}, time::Instant, vec};
+use std::{
+    fs::File,
+    io::{self, BufRead},
+    time::Instant,
+    vec,
+};
 
-struct Map{
+struct Map {
     map: Vec<Vec<char>>,
     width: usize,
-    height: usize
+    height: usize,
 }
 
 impl Map {
@@ -15,7 +20,7 @@ impl Map {
             y += dy;
             x += dx;
             if y >= self.height {
-                break
+                break;
             }
             if self.map[y][x % self.width] == '#' {
                 count += 1;
@@ -25,13 +30,13 @@ impl Map {
     }
 }
 
-fn parse(filename: &str)-> Option<Map>{
+fn parse(filename: &str) -> Option<Map> {
     let file = File::open(filename).ok()?;
     let lines = io::BufReader::new(file).lines();
-    let mut map = Map{
+    let mut map = Map {
         map: vec![],
         width: 0,
-        height: 0
+        height: 0,
     };
     for line in lines {
         let line_str = line.unwrap();
@@ -52,11 +57,11 @@ fn main() {
     // Count the trees
     let computing_begin = Instant::now();
     let trees1 = map.travel_trees(1, 3);
-    let trees2 = map.travel_trees(1, 1) *
-                        map.travel_trees(1, 3) *
-                        map.travel_trees(1, 5) *
-                        map.travel_trees(1, 7) *
-                        map.travel_trees(2, 1);
+    let trees2 = map.travel_trees(1, 1)
+        * map.travel_trees(1, 3)
+        * map.travel_trees(1, 5)
+        * map.travel_trees(1, 7)
+        * map.travel_trees(2, 1);
     let computing_elapsed = computing_begin.elapsed();
 
     // Print results
@@ -68,4 +73,3 @@ fn main() {
     println!("parsing took {:.2?}", parsing_elapsed);
     println!("computing took {:.2?}", computing_elapsed);
 }
-
