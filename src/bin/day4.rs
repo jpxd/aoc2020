@@ -107,7 +107,7 @@ fn main() {
     let passports = parse("./inputs/day4.txt").unwrap();
     let parsing_elapsed = parsing_begin.elapsed();
 
-    // Count the trees
+    // Compute solution
     let computing_begin = Instant::now();
     let valid1 = passports.iter().filter(|p| p.valid1()).count();
     let valid2 = passports.iter().filter(|p| p.valid2().is_some()).count();
