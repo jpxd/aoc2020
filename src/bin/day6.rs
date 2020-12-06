@@ -27,7 +27,7 @@ fn parse(filename: &str) -> Option<Vec<Group>> {
     let groups: Vec<Group> = input
         .split("\n\n")
         .map(|lines| Group {
-            people: (lines.split("\n").map(|ls| ls.chars().collect())).collect(),
+            people: lines.split("\n").map(|l| l.chars().collect()).collect(),
         })
         .collect();
     Some(groups)
