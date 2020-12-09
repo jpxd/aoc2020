@@ -17,39 +17,30 @@ impl Colors {
             rules: HashMap::new(),
         }
     }
-    fn color_can_contain_color(&self, parent: String, child: String) -> bool {
-        let mut stack: Vec<String> = vec![parent];
-        while let Some(current) = stack.pop() {
-            if current == child {
-                return true;
-            }
-            let next: Vec<String> = self
-                .rules
-                .get(&current)
-                .unwrap()
-                .iter()
-                .map(|(name, _amount)| name.clone())
-                .collect();
-            stack.extend(next);
+    fn color_can_contain_color(&self, current: &str, wanted_child: &str) -> bool {
+        if current == wanted_child {
+            return true;
         }
-        false
+        self.rules
+            .get(current)
+            .unwrap()
+            .iter()
+            .any(|(child, _count)| self.color_can_contain_color(child, wanted_child))
     }
-    fn how_many_colors_can_contain_color(&self, child: String) -> usize {
+    fn how_many_colors_can_contain_color(&self, child: &str) -> usize {
         self.rules
             .keys()
-            .filter(|parent| {
-                **parent != child && self.color_can_contain_color(parent.to_string(), child.clone())
-            })
+            .filter(|parent| *parent != child && self.color_can_contain_color(parent, child))
             .count()
     }
-    fn how_many_bags_in_color(&self, parent: String) -> i32 {
-        let current = self.rules.get(&parent).unwrap();
+    fn how_many_bags_in_color(&self, parent: &str) -> i32 {
+        let current = self.rules.get(parent).unwrap();
         if current.is_empty() {
             return 1;
         }
         let sum_subcolors: i32 = current
             .iter()
-            .map(|(name, amount)| *amount * self.how_many_bags_in_color(name.clone()))
+            .map(|(name, amount)| *amount * self.how_many_bags_in_color(name))
             .sum();
         return 1 + sum_subcolors;
     }
@@ -89,8 +80,8 @@ fn main() {
 
     // Compute solution
     let computing_begin = Instant::now();
-    let sum1 = colors.how_many_colors_can_contain_color("shiny gold".into());
-    let sum2 = colors.how_many_bags_in_color("shiny gold".into());
+    let sum1 = colors.how_many_colors_can_contain_color("shiny gold");
+    let sum2 = colors.how_many_bags_in_color("shiny gold");
     let computing_elapsed = computing_begin.elapsed();
 
     // Print results
