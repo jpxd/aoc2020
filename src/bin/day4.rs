@@ -2,8 +2,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::{
     collections::HashMap,
-    fs::File,
-    io::{self, BufRead},
+    fs::{self},
     time::Instant,
     vec,
 };
@@ -28,11 +27,6 @@ struct Passport {
 }
 
 impl Passport {
-    fn new() -> Passport {
-        Passport {
-            fields: HashMap::new(),
-        }
-    }
     fn valid1(&self) -> bool {
         return REQUIRED_FIELDS
             .iter()
@@ -79,26 +73,23 @@ impl Passport {
 }
 
 fn parse(filename: &str) -> Option<Vec<Passport>> {
-    let file = File::open(filename).ok()?;
-    let lines = io::BufReader::new(file).lines();
-    let mut passports: Vec<Passport> = vec![];
-    let mut current = Passport::new();
-    for line in lines {
-        let line_str = line.unwrap();
-        if line_str.is_empty() {
-            passports.push(current);
-            current = Passport::new();
-            continue;
-        }
-        line_str.split_whitespace().for_each(|assignment| {
-            let tokens: Vec<&str> = assignment.split(':').collect();
-            current
-                .fields
-                .insert(tokens[0].to_string(), tokens[1].to_string());
-        });
-    }
-    passports.push(current);
-    return Some(passports);
+    let input = fs::read_to_string(filename).ok()?;
+    let passports: Vec<Passport> = input
+        .split("\n\n")
+        .map(|lines| {
+            let mut passport = Passport {
+                fields: HashMap::new(),
+            };
+            lines.split_whitespace().for_each(|assignment| {
+                let tokens: Vec<&str> = assignment.split(':').collect();
+                passport
+                    .fields
+                    .insert(tokens[0].to_string(), tokens[1].to_string());
+            });
+            passport
+        })
+        .collect();
+    Some(passports)
 }
 
 fn main() {

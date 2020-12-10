@@ -48,19 +48,13 @@ fn main() {
     // Compute solution
     let computing_begin = Instant::now();
     let seat_ids: HashSet<i32> = passes.iter().map(|p| p.seat_id()).collect();
-    let max_seat_id = seat_ids.iter().max().unwrap();
-    let mut my_seat_id = -1;
-    for r in 0..127 {
-        for c in 0..8 {
-            let id = r * 8 + c;
-            if !seat_ids.contains(&id)
-                && seat_ids.contains(&(id - 1))
-                && seat_ids.contains(&(id + 1))
-            {
-                my_seat_id = id;
-            }
-        }
-    }
+    let min_seat_id = *seat_ids.iter().min().unwrap();
+    let max_seat_id = *seat_ids.iter().max().unwrap();
+    let my_seat_id: i32 = (min_seat_id..max_seat_id)
+        .find(|id| {
+            !seat_ids.contains(&id) && seat_ids.contains(&(id - 1)) && seat_ids.contains(&(id + 1))
+        })
+        .unwrap_or(-1);
     let computing_elapsed = computing_begin.elapsed();
 
     // Print results
